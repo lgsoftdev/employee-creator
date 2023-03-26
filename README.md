@@ -17,7 +17,7 @@ The Employee Creator website:
 
 ## Design Preview
 
-![Employee List Page](assets/employeelist.PNG)
-![Employee Add / Create Form 1](assets/personalinfo.PNG)
-![Employee Add / Create Form 2](assets/contactdetails.PNG)
-![Employee Add / Create Form 3](assets/employeestatus.PNG)
+![Employee List Page](./assets/employeelist.png)
+![Employee Add / Create Form 1](./assets/personalinfo.png)
+![Employee Add / Create Form 2](./assets/contactdetails.png)
+![Employee Add / Create Form 3](./assets/employeestatus.png)
