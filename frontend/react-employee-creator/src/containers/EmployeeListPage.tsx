@@ -3,7 +3,7 @@ import { useEmployeesContext } from '../context/EmployeesContext';
 import EmployeeTable from '../components/EmployeeTable';
 import { getEmployees } from '../service/DataService';
 
-const HomePage = () => {
+const EmployeeListPage = () => {
   const { employees, setEmployees } = useEmployeesContext();
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState(null);
@@ -41,4 +41,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default EmployeeListPage;

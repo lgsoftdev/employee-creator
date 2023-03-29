@@ -1,13 +1,13 @@
 import { EmployeesContext } from './EmployeesContext';
-import PersonalInfoDto from '../dtos/PersonalInfoDto';
 import { useState } from 'react';
+import EmployeeDetailsDto from '../dtos/EmployeeDetailsDto';
 
 interface props {
   children: JSX.Element | JSX.Element[];
 }
 
 const EmployeesProvider = ({ children }: props) => {
-  const [employees, setEmployees] = useState<PersonalInfoDto[]>([]);
+  const [employees, setEmployees] = useState<EmployeeDetailsDto[]>([]);
 
   return (
     <EmployeesContext.Provider value={{ employees, setEmployees }}>

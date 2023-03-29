@@ -56,10 +56,10 @@ const EmployeeTableRow: React.FC<{ employee: EmployeeDetailsDto }> = (
             Edit
           </button>
         </NavLink>{' '}
-        |{' '}
+        |
         <button
           type="button"
-          className="btn btn-link"
+          className="btn btn-link remove-link"
           onClick={handleRemoveEmployee}
         >
           Remove
