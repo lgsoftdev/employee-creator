@@ -41,17 +41,20 @@ const AddEmployeePage = () => {
     employeeStatus.hoursPerWeek = data.hoursPerWeek;
 
     const url = 'http://localhost:8080/api/admin/employee/add';
-    await updateEmployee(url, 'POST', employee, contactDetails, employeeStatus)
-      .then((response) => {
-        if (response.ok) {
-          setWarningMessage('');
-          setDisplaySuccess(true);
-        } else {
-          setDisplaySuccess(false);
-          setWarningMessage('Something went wrong!');
-        }
-      })
-      .catch();
+    try {
+      await updateEmployee(
+        url,
+        'POST',
+        employee,
+        contactDetails,
+        employeeStatus
+      );
+      setWarningMessage('');
+      setDisplaySuccess(true);
+    } catch (error) {
+      setDisplaySuccess(false);
+      setWarningMessage('Something went wrong!');
+    }
     e.target.reset();
   };
 

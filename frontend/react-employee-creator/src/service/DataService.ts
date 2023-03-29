@@ -2,16 +2,21 @@ import ContactDetailsDto from '../dtos/ContactDetailsDto';
 import PersonalInfoDto from '../dtos/PersonalInfoDto';
 import EmployeeStatusDto from '../dtos/EmployeeStatusDto';
 import EmployeeDetailsDto from '../dtos/EmployeeDetailsDto';
+import axios from 'axios';
 
 export const getEmployees = async () => {
   const url: string =
     'http://localhost:8080/api/employeeCards/search/findByIsArchived?isArchived=false&sort=firstName,ASC';
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Something went wrong!');
+
+  let responseData;
+
+  try {
+    const response = await axios.get(url);
+    responseData = await response.data._embedded.employeeCards;
+  } catch (error) {
+    throw new Error('Something went wrong');
   }
-  const responseJson = await response.json();
-  const responseData = responseJson._embedded.employeeCards;
+
   const employeesDetails: EmployeeDetailsDto[] = [];
   for (const index in responseData) {
     const personalInfo = new PersonalInfoDto(
@@ -45,41 +50,39 @@ export const getEmployees = async () => {
 };
 
 export const getPersonalInfo = async (id: number) => {
-  const url = `http://localhost:8080/api/employees/${id}`;
-  const requestOptions = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  const personalInfo = await fetch(url, requestOptions);
-  if (!personalInfo.ok) throw new Error('Something went wrong');
-  const personalInfoJson = await personalInfo.json();
-  return personalInfoJson;
+  try {
+    const url = `http://localhost:8080/api/employees/${id}`;
+    const response = await axios.get(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return await response.data;
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };
 
 export const getContactDetails = async (id: number) => {
-  const url = `http://localhost:8080/api/employeeContactDetails/search/findByEmployeeId?employeeId=${id}`;
-  const requestOptions = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  const contactDetails = await fetch(url, requestOptions);
-  if (!contactDetails.ok) throw new Error('Something went wrong');
-  const contactDetailsJson = await contactDetails.json();
-  return contactDetailsJson;
+  try {
+    const url = `http://localhost:8080/api/employeeContactDetails/search/findByEmployeeId?employeeId=${id}`;
+    const response = await axios.get(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return await response.data;
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };
 
 export const getEmployeeStatus = async (id: number) => {
-  const url = `http://localhost:8080/api/employeeStatuses/search/findByEmployeeId?employeeId=${id}`;
-  const requestOptions = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  };
-  const employeeStatus = await fetch(url, requestOptions);
-  if (!employeeStatus.ok) throw new Error('Something went wrong');
-  const employeeStatusJson = await employeeStatus.json();
-  return employeeStatusJson;
+  try {
+    const url = `http://localhost:8080/api/employeeStatuses/search/findByEmployeeId?employeeId=${id}`;
+    const response = await axios.get(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return await response.data;
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };
 
 export const updateEmployee = async (
@@ -94,51 +97,52 @@ export const updateEmployee = async (
     contactDetails,
     employeeStatus
   );
-
-  const requestOptions = {
-    method: method,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updateDto),
-  };
-
-  return await fetch(url, requestOptions);
+  try {
+    const header = { headers: { 'Content-Type': 'application/json' } };
+    const res =
+      method.toLowerCase() == 'put'
+        ? await axios.put(url, updateDto, header)
+        : await axios.post(url, updateDto, header);
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };
 
 export const removeEmployee = async (id: number) => {
-  const url = `http://localhost:8080/api/admin/employee/remove?id=${id}`;
-  const requestOptions = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  const employee = await fetch(url, requestOptions);
-  if (!employee.ok) throw new Error('Something went wrong');
+  try {
+    const url = `http://localhost:8080/api/admin/employee/remove?id=${id}`;
+    const res = await axios.put(
+      url,
+      {},
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };
 
 export const getContractTypes = async () => {
-  const url = 'http://localhost:8080/api/contractTypes';
-  const requestOptions = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  const contractTypes = await fetch(url, requestOptions);
-  if (!contractTypes.ok) throw new Error('Something went wrong');
-  const responseJson = await contractTypes.json();
-  const contractTypesJson = responseJson._embedded.contractTypes;
-  return contractTypesJson;
+  try {
+    const url = 'http://localhost:8080/api/contractTypes';
+    const response = await axios.get(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const contractTypes = await response.data._embedded.contractTypes;
+    return contractTypes;
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };
 
 export const getWorkTypes = async () => {
-  const url = 'http://localhost:8080/api/workTypes';
-  const requestOptions = {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  const workTypes = await fetch(url, requestOptions);
-  if (!workTypes.ok) throw new Error('Something went wrong');
-  const responseJson = await workTypes.json();
-  const workTypesJson = responseJson._embedded.workTypes;
-  return workTypesJson;
+  try {
+    const url = 'http://localhost:8080/api/workTypes';
+    const response = await axios.get(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const workTypes = await response.data._embedded.workTypes;
+    return workTypes;
+  } catch (error) {
+    throw new Error('Something went wrong');
+  }
 };

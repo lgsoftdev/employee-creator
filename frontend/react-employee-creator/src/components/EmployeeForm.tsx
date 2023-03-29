@@ -55,6 +55,12 @@ const EmployeeForm = ({
     }
   };
 
+  const handleWorkTypeClick = (event: any) => {
+    if (Number(event.target.value) !== WORK_TYPE_PART_TIME) {
+      setValue('hoursPerWeek', '');
+    }
+  };
+
   const onSubmit = (data: any, e: any) => {
     data.startDate = getFormattedDateForDBUpdate(data.startDate);
     data.finishDate = data.finishDate
@@ -346,11 +352,7 @@ const EmployeeForm = ({
                         type="radio"
                         defaultValue={item.id}
                         {...register('workType', { required: true })}
-                        onClick={(e) => {
-                          if (Number(e.target.value) !== WORK_TYPE_PART_TIME) {
-                            setValue('hoursPerWeek', '');
-                          }
-                        }}
+                        onClick={handleWorkTypeClick}
                       />
                       <label className="small" htmlFor="workType">
                         {item.workType}
