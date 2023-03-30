@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useEmployeesContext } from '../context/EmployeesContext';
 import EmployeeTable from '../components/EmployeeTable';
 import { getEmployees } from '../service/DataService';
+import Spinner from '../components/Spinner';
 
 const EmployeeListPage = () => {
   const { employees, setEmployees } = useEmployeesContext();
@@ -24,11 +25,7 @@ const EmployeeListPage = () => {
   return (
     <>
       {httpError && <p className="text-danger">{httpError}</p>}
-      {isLoading && !httpError && (
-        <div className="d-flex justify-content-center">
-          <div className="spinner-border text-warning"></div>
-        </div>
-      )}
+      {isLoading && !httpError && <Spinner />}
       {!isLoading && !httpError && (
         <div className="card mt-5">
           <h5 className="card-header">List of Employees</h5>

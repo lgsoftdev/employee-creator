@@ -56,11 +56,10 @@ const employees: EmployeeDetailsDto[] = [
   },
 ];
 
-describe('Data Service test suite', () => {
+describe('Employee List test suite', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    //dataServiceMock.getEmployees.mockResolvedValue(employees);
     container = render(
       <BrowserRouter>
         <Routes>
