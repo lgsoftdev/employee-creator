@@ -9,8 +9,8 @@ import ContractTypesDto from '../dtos/ContractTypesDto';
 import WorkTypesDto from '../dtos/WorkTypesDto';
 import EmployeeStatusDto from '../dtos/EmployeeStatusDto';
 import {
-  getFormattedDateForDBUpdate,
   CONTRACT_TYPE_CONTRACT,
+  getFormattedDateForDBUpdate,
   WORK_TYPE_PART_TIME,
 } from '../utils/utils';
 
@@ -37,27 +37,55 @@ const EmployeeForm = ({
     control,
     setValue,
     getValues,
+    setFocus,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm();
 
   const [contractTypes, setContractTypes] = useState<ContractTypesDto[]>([]);
   const [workTypes, setWorkTypes] = useState<WorkTypesDto[]>([]);
 
+  const handleContractTypeChange = (event: any) => {
+    setValue('contractTypeLabel', getContractDescription(event.target.value));
+  };
+
   const handleFinishDateChange = (event: any) => {
+    clearErrors('contractType');
     setValue('finishDate', event);
-    resetField('onGoing');
+    if (!event) setValue('onGoing', 0);
   };
 
   const handleOnGoingClick = (event: any) => {
+    clearErrors('contractType');
+
     if (event.target.checked) {
+      setValue('onGoing', 1);
       employeeStatus.finishDate = undefined;
       resetField('finishDate');
-    }
+    } else setValue('onGoing', 0);
   };
 
   const handleWorkTypeClick = (event: any) => {
+    setValue('workTypeLabel', getWorkDescription(event.target.value));
     if (Number(event.target.value) !== WORK_TYPE_PART_TIME) {
       setValue('hoursPerWeek', '');
+    }
+  };
+
+  const getContractDescription = (typeId: number) => {
+    try {
+      return contractTypes.filter((item) => item.id == typeId)[0].contractType;
+    } catch (error) {
+      return '';
+    }
+  };
+
+  const getWorkDescription = (typeId: number) => {
+    try {
+      return workTypes.filter((item) => item.id == typeId)[0].workType;
+    } catch (error) {
+      return '';
     }
   };
 
@@ -67,6 +95,7 @@ const EmployeeForm = ({
       ? getFormattedDateForDBUpdate(data.finishDate)
       : data.finishDate;
     onFormSubmit(data, e);
+    setFocus('firstName');
   };
 
   useEffect(() => {
@@ -179,7 +208,7 @@ const EmployeeForm = ({
                     defaultValue={contactDetails.mobileNumber}
                     {...register('mobileNumber', {
                       required: true,
-                      minLength: 10,
+                      minLength: 9,
                       maxLength: 10,
                     })}
                   />
@@ -187,7 +216,7 @@ const EmployeeForm = ({
               </div>
               {errors.mobileNumber && (
                 <p className="text-danger small">
-                  Required field with 10 digits
+                  Required field with up to 10 digits
                 </p>
               )}
             </div>
@@ -219,9 +248,14 @@ const EmployeeForm = ({
                 </label>
                 {employeeStatus.contractType && (
                   <label className="text-primary small ms-2">
-                    {contractTypes
-                      .filter((item) => item.id == employeeStatus.contractType)
-                      .map((item) => item.contractType)}
+                    <input
+                      {...register('contractTypeLabel')}
+                      className="no-border text-primary"
+                      disabled
+                      value={getContractDescription(
+                        employeeStatus.contractType
+                      )}
+                    />
                   </label>
                 )}
               </div>
@@ -233,7 +267,18 @@ const EmployeeForm = ({
                         className="form-check-input me-3"
                         type="radio"
                         defaultValue={item.id}
-                        {...register('contractType', { required: true })}
+                        {...register('contractType', {
+                          required: true,
+                          onChange: handleContractTypeChange,
+                          validate: (value) => {
+                            return (
+                              Number(value) !== CONTRACT_TYPE_CONTRACT ||
+                              (Number(value) == CONTRACT_TYPE_CONTRACT &&
+                                (getValues('finishDate') ||
+                                  Number(getValues('onGoing')) === 1))
+                            );
+                          },
+                        })}
                       />
                       <label className="small" htmlFor="contractType">
                         {item.contractType}
@@ -242,7 +287,10 @@ const EmployeeForm = ({
                   );
                 })}
               {errors.contractType && (
-                <p className="text-danger small">Required field</p>
+                <p className="text-danger small">
+                  Required field. If a Contract, Finish date must be entered
+                  else tick the On going checkbox.
+                </p>
               )}
             </div>
 
@@ -316,12 +364,6 @@ const EmployeeForm = ({
                   className="form-check-input me-3"
                   type="checkbox"
                   {...register('onGoing')}
-                  checked={
-                    employeeStatus.contractType == CONTRACT_TYPE_CONTRACT &&
-                    !employeeStatus.finishDate
-                      ? true
-                      : false
-                  }
                   onClick={handleOnGoingClick}
                 />
                 <label className="small" htmlFor="onGoing">
@@ -337,9 +379,12 @@ const EmployeeForm = ({
                 </label>
                 {employeeStatus.workType && (
                   <label className="text-primary small ms-2">
-                    {workTypes
-                      .filter((item) => item.id == employeeStatus.workType)
-                      .map((item) => item.workType)}
+                    <input
+                      {...register('workTypeLabel')}
+                      className="no-border text-primary"
+                      disabled
+                      value={getWorkDescription(employeeStatus.workType)}
+                    />
                   </label>
                 )}
               </div>
