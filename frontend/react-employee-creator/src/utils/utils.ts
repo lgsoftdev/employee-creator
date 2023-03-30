@@ -17,27 +17,5 @@ export const getYearsDiff = (dt1: Date, dt2: Date) => {
   return yearsDiff;
 };
 
-export const toUpperCase = (s: string) => {
-  return s.toUpperCase();
-};
-
-export type stringInfo = {
-  lowerCase: string;
-  upperCase: string;
-  characters: string[];
-  length: number;
-  extraInfo: Object | undefined;
-};
-
-export const getStringInfo = (arg: String): stringInfo => {
-  return {
-    lowerCase: arg.toLowerCase(),
-    upperCase: arg.toUpperCase(),
-    characters: Array.from(arg),
-    length: arg.length,
-    extraInfo: {},
-  };
-};
-
 export const WORK_TYPE_PART_TIME = 2;
 export const CONTRACT_TYPE_CONTRACT = 2;
