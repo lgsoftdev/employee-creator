@@ -4,17 +4,15 @@ import com.lgsoftdev.javaemployeecreator.dao.EmployeeContactDetailRepository;
 import com.lgsoftdev.javaemployeecreator.dao.EmployeeRepository;
 import com.lgsoftdev.javaemployeecreator.dao.EmployeeStatusRepository;
 import com.lgsoftdev.javaemployeecreator.dto.EmployeePersonalContactStatusDto;
-import com.lgsoftdev.javaemployeecreator.dto.EmployeePersonalInfoDto;
 import com.lgsoftdev.javaemployeecreator.entity.Employee;
 import com.lgsoftdev.javaemployeecreator.entity.EmployeeContactDetail;
 import com.lgsoftdev.javaemployeecreator.entity.EmployeeStatus;
-import com.lgsoftdev.javaemployeecreator.utils.Helper;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -31,28 +29,20 @@ public class EmployeeService {
         this.employeeStatusRepository = employeeStatusRepository;
     }
 
+    @Autowired
+    private ModelMapper mapper;
+
     public void addEmployee(EmployeePersonalContactStatusDto employeeDto){
-        Employee employee = new Employee();
-        employee.setFirstName(employeeDto.getPersonalInfoDto().getFirstName().trim());
-        employee.setMiddleName(Helper.getNullIfEmptyString(employeeDto.getPersonalInfoDto().getMiddleName()));
-        employee.setLastName(employeeDto.getPersonalInfoDto().getLastName().trim());
+        Employee employee = mapper.map(employeeDto.getPersonalInfoDto(), Employee.class);
         employee.setIsArchived(false);
         employeeRepository.save(employee);
 
-        EmployeeContactDetail contactDetail = new EmployeeContactDetail();
+        EmployeeContactDetail contactDetail =  mapper.map(employeeDto.getContactDetailsDto(), EmployeeContactDetail.class);
         contactDetail.setEmployeeId(employee.getId());
-        contactDetail.setEmailAddress(employeeDto.getContactDetailsDto().getEmailAddress().trim());
-        contactDetail.setMobileNumber(employeeDto.getContactDetailsDto().getMobileNumber());
-        contactDetail.setResidentialAddress(employeeDto.getContactDetailsDto().getResidentialAddress().trim());
         employeeContactDetailRepository.save(contactDetail);
 
-        EmployeeStatus employeeStatus = new EmployeeStatus();
+        EmployeeStatus employeeStatus = mapper.map(employeeDto.getEmployeeStatusDto(), EmployeeStatus.class);
         employeeStatus.setEmployeeId(employee.getId());
-        employeeStatus.setContractType(employeeDto.getEmployeeStatusDto().getContractType());
-        employeeStatus.setStartDate(employeeDto.getEmployeeStatusDto().getStartDate());
-        employeeStatus.setFinishDate(employeeDto.getEmployeeStatusDto().getFinishDate());
-        employeeStatus.setWorkType(employeeDto.getEmployeeStatusDto().getWorkType());
-        employeeStatus.setHoursPerWeek(employeeDto.getEmployeeStatusDto().getHoursPerWeek());
         employeeStatusRepository.save(employeeStatus);
     }
 
@@ -69,21 +59,14 @@ public class EmployeeService {
         if(employeeStatus.isEmpty()) {
             throw new Exception("Employee status not found");
         }
-        employee.get().setFirstName(employeeDto.getPersonalInfoDto().getFirstName().trim());
-        employee.get().setMiddleName(Helper.getNullIfEmptyString(employeeDto.getPersonalInfoDto().getMiddleName()));
-        employee.get().setLastName(employeeDto.getPersonalInfoDto().getLastName().trim());
+
+        mapper.map(employeeDto.getPersonalInfoDto(), employee.get());
         employeeRepository.save(employee.get());
 
-        contactDetails.get().setEmailAddress(employeeDto.getContactDetailsDto().getEmailAddress().trim());
-        contactDetails.get().setMobileNumber(employeeDto.getContactDetailsDto().getMobileNumber());
-        contactDetails.get().setResidentialAddress(employeeDto.getContactDetailsDto().getResidentialAddress().trim());
+        mapper.map(employeeDto.getContactDetailsDto(), contactDetails.get());
         employeeContactDetailRepository.save(contactDetails.get());
 
-        employeeStatus.get().setContractType(employeeDto.getEmployeeStatusDto().getContractType());
-        employeeStatus.get().setStartDate(employeeDto.getEmployeeStatusDto().getStartDate());
-        employeeStatus.get().setFinishDate(employeeDto.getEmployeeStatusDto().getFinishDate());
-        employeeStatus.get().setWorkType(employeeDto.getEmployeeStatusDto().getWorkType());
-        employeeStatus.get().setHoursPerWeek(employeeDto.getEmployeeStatusDto().getHoursPerWeek());
+        mapper.map(employeeDto.getEmployeeStatusDto(), employeeStatus.get());
         employeeStatusRepository.save(employeeStatus.get());
     }
 

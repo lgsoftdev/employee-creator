@@ -15,7 +15,7 @@ public class EmployeeContactDetailsDto {
     private String emailAddress;
 
     @NotEmpty(message = "Mobile Number must be an Australian number with 10 digits.")
-    @Pattern(regexp="\\d{10}")
+    @Pattern(regexp="\\d{9,10}")
     private String mobileNumber;
 
     @NotEmpty(message = "Residential Address may not be empty")
